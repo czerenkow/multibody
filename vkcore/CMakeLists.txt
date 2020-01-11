@@ -16,4 +16,3 @@ target_sources(vkcore
 	)
 target_include_directories(vkcore PUBLIC "include")
 target_link_libraries(vkcore PUBLIC Vulkan::Vulkan)
-target_link_libraries(vkcore PUBLIC LibGLFW) # TODO: Should this really depend on GLFW?

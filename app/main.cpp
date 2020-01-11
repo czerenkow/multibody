@@ -23,6 +23,40 @@ VkExtent2D fb_size;
 
 
 
+std::vector<std::string> getRequiredInstanceExtensions() {
+    std::vector<std::string> extensions;
+
+    // GLFW extenstions
+    // this is probably only "VK_KHR_surface"
+    // GLFW guarantees that returned pointers are valid until
+    uint32_t glfwExtensionCount = 0;
+    const char **glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    for (uint32_t i = 0; i < glfwExtensionCount; i++)
+    {
+        const char* ext_p = *(glfwExtensions + i);
+        extensions.emplace_back(ext_p, std::strlen(ext_p));
+    }
+
+#ifdef ENABLE_VALIDATION_LAYERS
+    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
+    return extensions;
+}
+
+std::vector<std::string> getRequiredDeviceExtensions() {
+    return { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+}
+
+
+std::vector<std::string> getRequiredValidationLayers() {
+#ifdef ENABLE_VALIDATION_LAYERS
+    return { "VK_LAYER_KHRONOS_validation" }; // "VK_LAYER_LUNARG_screenshot"
+#else
+    return {};
+#endif
+}
+
+
 struct vkcore {
     VkInstance instance;
 #ifdef ENABLE_VALIDATION_LAYERS
@@ -42,8 +76,7 @@ struct vkcore {
         debugMessenger = setupDebugMessenger(instance);
 #endif
         physicalDevice = pickPhysicalDevice(instance, getRequiredDeviceExtensions());
-
-        surface = createSurface(instance, window);
+        VK_CHECK_RESULT(glfwCreateWindowSurface(instance, window, ALLOCATOR, &surface))
         queueFamilyIndices = physicalDevice.findQueueFamilyIndices(surface);
         device = physicalDevice.createDevice( getRequiredDeviceExtensions(),
                                               queueFamilyIndices.uniqueIndices() );
@@ -52,7 +85,6 @@ struct vkcore {
         assert( queueFamilyIndices.presentFamily == queueFamilyIndices.graphicsComputeFamily );
 
         swapChain = createSwapChain(device, physicalDevice, surface, queueFamilyIndices, fb_size);
-
     }
 
     ~vkcore() {

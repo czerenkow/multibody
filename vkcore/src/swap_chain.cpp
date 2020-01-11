@@ -174,14 +174,6 @@ SwapChain createSwapChain(VkDevice device,
     return result;
 }
 
-VkSurfaceKHR createSurface(VkInstance instance, GLFWwindow* window) {
-    VkSurfaceKHR surface;
-    if (glfwCreateWindowSurface(instance, window, ALLOCATOR, &surface) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create window surface!");
-    }
-    return surface;
-}
-
 //===========================================
 // Drawing
 //===========================================

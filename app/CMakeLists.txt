@@ -13,6 +13,7 @@ target_sources(multibody
     "test_alg.cpp"
 )
 target_link_libraries(multibody PRIVATE vkcore)
+target_link_libraries(multibody PRIVATE LibGLFW)
 
 add_custom_target(Shaders ALL make -C ${CMAKE_SOURCE_DIR}/shaders/)
 add_compile_definitions(SHADERS_DIR="${CMAKE_SOURCE_DIR}/shaders/")

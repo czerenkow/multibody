@@ -7,11 +7,6 @@
 #include "utils.hpp"
 
 //namespace vkcore {
-
-std::vector<std::string> getRequiredInstanceExtensions();
-std::vector<std::string> getRequiredDeviceExtensions();
-std::vector<std::string> getRequiredValidationLayers();
-
 bool checkInstanceExtensionSupport(const std::vector<std::string>& extensions);
 
 VkInstance createVulkanInstance(const std::vector<std::string>& instanceExtensions,

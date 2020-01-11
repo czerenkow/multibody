@@ -28,9 +28,6 @@ SwapChain createSwapChain(VkDevice device,
                           QueueFamilyIndices queueFamilyIndices,
                           VkExtent2D window_size);
 
-
-VkSurfaceKHR createSurface(VkInstance instance, GLFWwindow* window);
-
 //===========================================
 // Drawing
 //===========================================
