@@ -1,0 +1,21 @@
+#version 450
+
+layout (local_size_x_id = 50) in;
+
+struct Particle
+{
+	vec4 pos;
+	vec4 vel;
+};
+
+layout (binding = 0) buffer _particle_data { Particle particle_data[]; };
+layout (constant_id = 0) const int N = 0; // Must be specified at runtime
+layout (constant_id = 1) const float DELTA_T = 0; // Must be specified at runtime
+
+void main() {
+    uint xGID = gl_GlobalInvocationID.x;
+    uint xLID = gl_LocalInvocationID.x;
+
+    vec4 vel = particle_data[xGID].vel;
+    particle_data[xGID].pos.xyz += DELTA_T * vel.xyz;
+}

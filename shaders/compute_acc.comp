@@ -1,0 +1,59 @@
+#version 450
+
+layout (local_size_x_id = 50) in;
+
+struct Particle
+{
+	vec4 pos;
+	vec4 vel;
+};
+
+layout (binding = 0) buffer _particle_data { Particle particle_data[]; };
+layout (constant_id = 0) const int N = 0; // Must be specified at runtime
+layout (constant_id = 1) const float DELTA_T = 0; // Must be specified at runtime
+
+const uint TILE_WIDTH = gl_WorkGroupSize.x;
+shared vec4 sharedData[TILE_WIDTH];
+const float EPS2 = 0.08;
+const float GRAVITY = 1.0;
+
+// This is real function
+vec3 body_body_interaction(vec4 bi, vec4 bj) {
+    vec3 r = bj.xyz - bi.xyz;
+    float distSqr = dot(r, r) + EPS2;
+    float distSixth = sqrt(distSqr * distSqr * distSqr);
+    return GRAVITY * r * bj.w / distSixth;
+}
+
+// vec3 body_body_interaction(vec4 bi, vec4 bj) {
+//     return vec3(bi.x*bj.x, bi.y*bj.y, bi.z*bj.z);
+// }
+
+
+vec3 tile_calculatation(vec4 myPosition) {
+    vec3 acc = {0.0, 0.0, 0.0};
+    for (uint i = 0; i < TILE_WIDTH; i++) {
+        // res += sharedData[i].xyz;
+        acc += body_body_interaction(myPosition, sharedData[i]);
+    }
+    return acc;
+}
+
+void main() {
+    uint xGID = gl_GlobalInvocationID.x;
+    uint xLID = gl_LocalInvocationID.x;
+
+    vec4 myPosition = particle_data[xGID].pos;
+    vec3 acc = {0.0, 0.0, 0.0};
+
+    uint tile = 0;
+    for (uint i = 0; i < N; i += TILE_WIDTH) {
+        sharedData[xLID] = particle_data[tile * TILE_WIDTH + xLID].pos;
+        barrier();
+        acc += tile_calculatation(myPosition);
+        barrier();
+        tile++;
+    }
+
+    particle_data[xGID].vel.xyz += DELTA_T * acc;
+}

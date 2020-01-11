@@ -1,0 +1,23 @@
+#version 450
+#define TILE_WIDTH 32
+
+layout (local_size_x = TILE_WIDTH) in;
+
+struct Particle
+{
+	vec4 pos;
+	vec4 vel;
+};
+
+layout (binding = 0) buffer _particle_data { Particle particle_data[]; };
+layout (constant_id = 0) const int N = 0; // Must be specified at runtime
+layout (constant_id = 1) const float DELTA_T = 0; // Must be specified at runtime
+
+mat3 matd = mat3(cos(DELTA_T), sin(DELTA_T), 0.0,   -sin(DELTA_T), cos(DELTA_T), 0.0,   0.0, 0.0, 0.0);
+
+
+void main() {
+    uint xGID = gl_GlobalInvocationID.x;
+    uint xLID = gl_LocalInvocationID.x;
+    particle_data[xGID].pos.xyz = matd * particle_data[xGID].pos.xyz;
+}
