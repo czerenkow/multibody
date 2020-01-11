@@ -15,4 +15,4 @@ target_sources(multibody
 target_link_libraries(multibody PRIVATE vkcore)
 
 add_custom_target(Shaders ALL make -C ${CMAKE_SOURCE_DIR}/shaders/)
-add_definitions(-DSHADERS_DIR="${CMAKE_SOURCE_DIR}/shaders/")
+add_compile_definitions(SHADERS_DIR="${CMAKE_SOURCE_DIR}/shaders/")
