@@ -10,7 +10,6 @@ target_sources(multibody
     "main.cpp"
     "compute.cpp"
     "graphics.cpp"
-    "test_alg.cpp"
 )
 target_link_libraries(multibody PRIVATE vkcore)
 target_link_libraries(multibody PRIVATE LibGLFW)
