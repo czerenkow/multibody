@@ -156,7 +156,7 @@ struct SyncObjects {
 Image createDepthImageResource(vkcore& ctx, VkExtent3D extent)
 {
     VkFormat format = ctx.physicalDevice.findDepthFormat();
-    Image result = createDepthImage(ctx.device, extent, format);
+    Image result = createDepthImage(ctx.device, ctx.physicalDevice, extent, format);
     transitionDepthImageToOptimal(ctx.device, ctx.graphicsCommandPool, ctx.graphicsQueue, result.image, format);
     return result;
 }
@@ -434,8 +434,9 @@ void initParticleBuffer_galaxy_3d(Vertex* data, std::size_t N) {
 
 Buffer createAndInitGPUParticleBuffer(vkcore& ctx, std::size_t N) {
     VkDeviceSize msize = sizeof(Vertex) * N;
-    Buffer buffer_stage {ctx.device, msize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                PhysicalDevice::amd_memory_type::host_local_primary_1};
+    Buffer buffer_stage {ctx.device, ctx.physicalDevice, msize,
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT};
 
     // Init stage buffer
     Vertex* data;
@@ -445,9 +446,9 @@ Buffer createAndInitGPUParticleBuffer(vkcore& ctx, std::size_t N) {
     vkUnmapMemory(ctx.device, buffer_stage.memory);
 
     // Copy buffer to the final
-    Buffer buffer {ctx.device, msize,
+    Buffer buffer {ctx.device, ctx.physicalDevice, msize,
                 VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                PhysicalDevice::amd_memory_type::device_local_primary_0};
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT};
 
     copyBuffer(ctx.device, ctx.graphicsQueue, ctx.graphicsCommandPool, buffer_stage.buffer, buffer.buffer, msize);
     return buffer;

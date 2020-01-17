@@ -160,18 +160,24 @@ VkFormat PhysicalDevice::findDepthFormat() {
 }
 
 
-// XXX This is removed as I suppose that this is not the best way to find correct memory type
-//uint32_t PhysicalDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
-//{
-//    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-//        if ( (typeFilter & (1 << i)) && // bit i == true, means that memory type i is supported
-//             (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-//        {
-//            return i;
-//        }
-//    }
-//    throw std::runtime_error("failed to find suitable memory type!");
-//}
+// Find a memory in `memoryTypeBitsRequirement` that includes all of `requiredProperties`
+// INFO: This function comes directly from Vulkan specs 1.1.20
+uint32_t PhysicalDevice::findMemoryType(uint32_t memoryTypeBitsRequirement, VkMemoryPropertyFlags requiredProperties) const
+{
+    const uint32_t memoryCount = memoryProperties.memoryTypeCount;
+    for (uint32_t memoryIndex = 0; memoryIndex < memoryCount; ++memoryIndex) {
+        const uint32_t memoryTypeBits = (1 << memoryIndex);
+        if ( !(memoryTypeBitsRequirement & memoryTypeBits) )
+            continue;
+        const VkMemoryPropertyFlags properties = memoryProperties.memoryTypes[memoryIndex].propertyFlags;
+        if ((properties & requiredProperties) == requiredProperties)
+            return memoryIndex;
+    }
+
+    // TODO: Implement some not hard handling of this case!
+    throw "Can not find correct memory type!";
+}
+
 
 
 bool PhysicalDevice::checkPhysicalDeviceQueueFimiliesSupport() {
@@ -235,7 +241,7 @@ VkDevice PhysicalDevice::createDevice(const std::vector<std::string>& deviceExte
 }
 
 
-void PhysicalDevice::displaySubgroupInfo() {
+void PhysicalDevice::displaySubgroupInfo() const {
     VkPhysicalDeviceSubgroupProperties subgroupProperties;
     subgroupProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
     subgroupProperties.pNext = nullptr;

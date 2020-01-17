@@ -49,9 +49,10 @@ struct Buffer {
     }
 
     Buffer(VkDevice device,
+           PhysicalDevice& physicalDevice,
            VkDeviceSize size,
            VkBufferUsageFlags usage,
-           PhysicalDevice::amd_memory_type memType);
+           VkMemoryPropertyFlags memoryFlags);
     ~Buffer();
 private:
     VkDevice device; // only need by destructor
@@ -120,5 +121,6 @@ void transitionDepthImageToOptimal(VkDevice device,
                                    VkFormat format);
 
 Image createDepthImage(VkDevice device,
+                       PhysicalDevice &physicalDevice,
                        VkExtent3D extent,
                        VkFormat format);

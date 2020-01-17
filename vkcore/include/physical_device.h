@@ -35,8 +35,8 @@ public:
     VkDevice createDevice(const std::vector<std::string>& deviceExtensions,
                           const std::set<uint32_t>& queueFamilyIndices);
 
-    //uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    void displaySubgroupInfo();
+    uint32_t findMemoryType(uint32_t memoryTypeBitsRequirement, VkMemoryPropertyFlags requiredProperties) const;
+    void displaySubgroupInfo() const;
 
     QueueFamilyIndices findQueueFamilyIndices(VkSurfaceKHR surface);
     SwapChainSupportDetails querySwapChainSupport(VkSurfaceKHR surface);
@@ -45,15 +45,13 @@ public:
     bool checkPhysicalDeviceExtensionSupport(const std::vector<std::string>& extensions);
     bool checkPhysicalDeviceQueueFimiliesSupport();
 
-    VkPhysicalDeviceMemoryProperties memoryProperties;
-
-    // OK... not very good idea but I do not know how properly automatically recognize best memory type
-    enum amd_memory_type {
-        device_local_primary_0 = 0,
-        host_local_primary_1,
-        device_local_256MB_2,
-        host_local_cached_3
-    };
+    // Radeon RX 570:
+    //    enum amd_memory_type {
+    //        device_local_primary_0 = 0,
+    //        host_local_primary_1,
+    //        device_local_256MB_2,
+    //        host_local_cached_3
+    //    };
 private:
     VkSampleCountFlagBits queryMaxUsableSampleCount();
     std::vector<VkQueueFamilyProperties> retrieveQueueFamilyProperties();
@@ -63,6 +61,7 @@ private:
 
 private:
     VkPhysicalDevice physicalDevice;
+    VkPhysicalDeviceMemoryProperties memoryProperties;
 
 public:
      // TODO: move these to 'private'

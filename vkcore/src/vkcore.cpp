@@ -25,7 +25,6 @@ VkInstance createVulkanInstance(const std::vector<std::string>& instanceExtensio
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = "No Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-   // appInfo.apiVersion = VK_API_VERSION_1_1;  // TODO: if want to have 1.1 support -> VK_API_VERSION_1_1
     appInfo.apiVersion = VK_MAKE_VERSION(1, 1, VK_HEADER_VERSION);
 
     VkInstanceCreateInfo createInfo {};

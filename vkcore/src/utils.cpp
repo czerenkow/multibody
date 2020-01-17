@@ -83,18 +83,16 @@ VkMemoryRequirements getGPUBufferMemoryRequirements(VkDevice device, VkBuffer bu
 
 
 Buffer::Buffer(VkDevice device,
-       VkDeviceSize size,
-       VkBufferUsageFlags usage,
-       PhysicalDevice::amd_memory_type memType)
+               PhysicalDevice& physicalDevice,
+               VkDeviceSize size,
+               VkBufferUsageFlags usage,
+               VkMemoryPropertyFlags memoryFlags)
 {
     std::cout << "Creating Buffer\n";
     buffer = createGPUBuffer(device, size, usage);
     VkMemoryRequirements memRequirements = getGPUBufferMemoryRequirements(device, buffer);
-    // memoryTypeBits bit N is set - means that memory type index N is supported
-    if ( ((1 << memType) & memRequirements.memoryTypeBits) == 0 ) {
-        throw std::runtime_error("Buffer::Buffer improper memory type for this type of resource. Expected: " + std::to_string(memRequirements.memoryTypeBits));
-    }
-    memory = allocGPUMemory(device, memRequirements.size, memType);
+    uint32_t memoryTypeIndex = physicalDevice.findMemoryType(memRequirements.memoryTypeBits, memoryFlags);
+    memory = allocGPUMemory(device, memRequirements.size, memoryTypeIndex);
     std::cout << "  Buffer: memory request: " << size << '\n';
     std::cout << "  Buffer:   memory alloc: " << memRequirements.size << '\n';
 
@@ -350,6 +348,7 @@ void transitionDepthImageToOptimal(VkDevice device,
 
 
 Image createDepthImage(VkDevice device,
+                       PhysicalDevice& physicalDevice,
                        VkExtent3D extent,
                        VkFormat format)
 {
@@ -382,7 +381,7 @@ Image createDepthImage(VkDevice device,
     VkMemoryAllocateInfo allocInfo {};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = PhysicalDevice::amd_memory_type::device_local_primary_0;
+    allocInfo.memoryTypeIndex = physicalDevice.findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
     if (vkAllocateMemory(device, &allocInfo, ALLOCATOR, &result.memory) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate depth image memory!");
