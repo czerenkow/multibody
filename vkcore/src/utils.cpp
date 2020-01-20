@@ -7,13 +7,13 @@ std::vector<char> readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {
-        throw std::runtime_error("failed to open file!");
+        throw std::runtime_error("Cannot load file " + filename);
     }
 
     auto fileSize = file.tellg();
-    std::vector<char> buffer(fileSize);
+    std::vector<char> buffer(static_cast<std::size_t>(fileSize));
     file.seekg(0);
-    file.read(buffer.data(), fileSize);
+    file.read(buffer.data(), static_cast<std::streamsize>(fileSize));
     file.close();
     return buffer;
 }

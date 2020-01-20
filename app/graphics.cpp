@@ -192,8 +192,8 @@ VkPipeline createGraphicsPipeline(VkDevice device,
     // -------------------------
     // --- Shader Stages -------
     // -------------------------
-    VkShaderModule vertShaderModule = createShaderModule(device, SHADERS_DIR"/shader_base.vert.spv");
-    VkShaderModule fragShaderModule = createShaderModule(device, SHADERS_DIR"/shader_base.frag.spv");
+    VkShaderModule vertShaderModule = createShaderModule(device, SHADERS_DIR"/particle.vert.spv");
+    VkShaderModule fragShaderModule = createShaderModule(device, SHADERS_DIR"/particle.frag.spv");
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

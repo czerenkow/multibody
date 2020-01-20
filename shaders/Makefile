@@ -1,6 +1,6 @@
 .PHONY: clean
 
-all: compute_simple.comp.spv compute_acc.comp.spv compute_pos.comp.spv shader_base.frag.spv shader_base.vert.spv
+all: compute_simple.comp.spv compute_acc.comp.spv compute_pos.comp.spv particle.frag.spv particle.vert.spv
 
 %.comp.spv: %.comp
 	glslangValidator  -V $< -o $@

@@ -384,8 +384,8 @@ void initParticleBuffer_galaxy_2d(Vertex* data, std::size_t N) {
 void initParticleBuffer_galaxy_3d(Vertex* data, std::size_t N) {
     std::default_random_engine generator{0}; // seed == 0 is quite good for this purpose
     std::uniform_real_distribution<float> distribution_angle(0.0f, 2.0f * pi());
-    const float sigma = 0.2f;
-    std::normal_distribution<float> distribution_distance(0.0f, 1.0f);
+    const float sigma = 5.0f;
+    std::normal_distribution<float> distribution_distance(0.0f, sigma);
 
     auto genDistance = [&]() -> float {
         return std::abs(distribution_distance(generator));
@@ -417,16 +417,16 @@ void initParticleBuffer_galaxy_3d(Vertex* data, std::size_t N) {
         glm::vec4 pos = dist * glm::vec4{std::sin(alpha), std::cos(alpha), 0.0f, 0.0f};
         glm::vec4 vel = glm::vec4{std::cos(alpha), -std::sin(alpha), 0.0f, 0.0f};
         pos = r * pos;
-        vel = 0.002f * float(N) * mass * cIns(dist) * r * vel;
+        vel = 0.02f * float(N) * mass * cIns(dist) * r * vel;
         data[i] = Vertex{glm::vec3{pos.x, pos.y, pos.z},
                          glm::vec3{vel.x, vel.y, vel.z},
                          mass};
     }
 
     // Additonal super massive star:
-//    data[0] = Vertex{glm::vec3{2.0f, 3.0f, 0.0f},
+//    data[0] = Vertex{glm::vec3{2.0f, 4.0f, 0.0f},
 //                     glm::vec3{0.0f, -0.2f, 0.0f},
-//                     300};
+//                     100};
 
 }
 
@@ -613,10 +613,11 @@ void runGraphics(GLFWwindow* window)
         auto stop_time = std::chrono::high_resolution_clock::now();
         auto duration = stop_time - start_time;
 
-        if (int(std::floor(duration.count() * 1e-9)) == report_sec) {
-            std::cout << report_sec << '\n';
-            report_sec++;
-        }
+        // Display number of seconds elapsed
+//        if (int(std::floor(duration.count() * 1e-9)) == report_sec) {
+//            std::cout << report_sec << '\n';
+//            report_sec++;
+//        }
 
         //curr_time = std::chrono::high_resolution_clock::now();
         //float time_delta = std::chrono::duration<float, std::chrono::seconds::period>(curr_time - prev_time).count();
